@@ -10,6 +10,11 @@ header {
     padding: 0.5em 1em;
 }
 
+.deleteButton {
+    background: #FF99CC;
+    margin-left: 1em;
+}
+
 section,
 h1 {
     max-width: 1170px;

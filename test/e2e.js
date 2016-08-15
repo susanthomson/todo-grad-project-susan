@@ -65,5 +65,29 @@ testing.describe("end to end", function() {
             });
         });
     });
+    testing.describe("on deleting todo item", function() {
+        testing.it("deletes the todo item from the list", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("New todo item");
+            helpers.deleteTodo(1);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 0);
+            });
+        });
+        testing.it("can be done multiple times", function() {
+            helpers.navigateToSite();
+            helpers.addTodo("New todo item");
+            helpers.deleteTodo(1);
+            helpers.addTodo("New todo item");
+            helpers.deleteTodo(1);
+            helpers.addTodo("New todo item");
+            helpers.addTodo("New todo item");
+            helpers.addTodo("New todo item");
+            helpers.deleteTodo(2);
+            helpers.getTodoList().then(function(elements) {
+                assert.equal(elements.length, 2);
+            });
+        });
+    });
 });
 
