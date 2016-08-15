@@ -3,6 +3,6 @@ general:
     - "build_artifacts"
 deployment:
   prod:
-    branch: header-colour
+    branch: master
     heroku:
       appname: todo-grad-project-susan
