@@ -1,4 +1,4 @@
-var _ = require("lodash");
+var _ = require("underscore");
 var express = require("express");
 var bodyParser = require("body-parser");
 
