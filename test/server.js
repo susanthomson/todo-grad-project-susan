@@ -71,7 +71,8 @@ describe("server", function() {
                     assert.deepEqual(JSON.parse(body), [{
                         title: "This is a TODO item",
                         done: false,
-                        id: "0"
+                        id: "0",
+                        isComplete: false
                     }]);
                     done();
                 });
@@ -123,14 +124,17 @@ describe("server", function() {
                     url: todoListUrl + "/0",
                     json: {
                         title: "This is an altered TODO item",
+                        isComplete: false,
                         done: false
                     }
                 }, function() {
                     request.get(todoListUrl, function(error, response, body) {
                         assert.deepEqual(JSON.parse(body), [{
-                            "done": false,
-                            "id": "0",
-                            "title": "This is an altered TODO item"}]);
+                            done: false,
+                            id: "0",
+                            title: "This is an altered TODO item",
+                            isComplete: false
+                        }]);
                         done();
                     });
                 });

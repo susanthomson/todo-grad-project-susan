@@ -15,6 +15,11 @@ header {
     margin-left: 1em;
 }
 
+.completeItem {
+    color: #FF3399;
+    text-decoration: line-through;
+}
+
 section,
 h1 {
     max-width: 1170px;
