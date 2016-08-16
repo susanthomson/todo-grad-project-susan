@@ -77,15 +77,12 @@ testing.describe("end to end", function() {
         testing.it("can be done multiple times", function() {
             helpers.navigateToSite();
             helpers.addTodo("New todo item");
-            helpers.getTodoList();
             helpers.deleteTodo(1);
             helpers.addTodo("New todo item");
-            helpers.getTodoList();
             helpers.deleteTodo(1);
             helpers.addTodo("New todo item");
             helpers.addTodo("New todo item");
             helpers.addTodo("New todo item");
-            helpers.getTodoList();
             helpers.deleteTodo(2);
             helpers.getTodoList().then(function(elements) {
                 assert.equal(elements.length, 2);
