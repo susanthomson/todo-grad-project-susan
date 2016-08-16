@@ -3,6 +3,7 @@ var todoListPlaceholder = document.getElementById("todo-list-placeholder");
 var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
+var countLabel = document.getElementById("count-label");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -50,11 +51,15 @@ function reloadTodoList() {
     getTodoList(function(todos) {
         todoListPlaceholder.style.display = "none";
         var numTodos = 0;
+        var undoneTodos = 0;
         todos.forEach(function(todo) {
             numTodos++;
             var listItem = document.createElement("li");
             if (todo.isComplete) {
                 listItem.className = "completeItem";
+            }
+            else {
+                undoneTodos++;
             }
             listItem.textContent = todo.title;
             var delButton = document.createElement("button");
@@ -79,6 +84,7 @@ function reloadTodoList() {
             listItem.appendChild(completeButton);
             todoList.appendChild(listItem);
         });
+        countLabel.textContent = undoneTodos;
     });
 }
 function completeTodo(todo, callback) {
