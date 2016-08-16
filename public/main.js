@@ -53,6 +53,9 @@ function reloadTodoList() {
         todos.forEach(function(todo) {
             numTodos++;
             var listItem = document.createElement("li");
+            if (todo.isComplete) {
+                listItem.className = "completeItem";
+            }
             listItem.textContent = todo.title;
             var delButton = document.createElement("button");
             delButton.id = "del" + numTodos;
@@ -64,9 +67,35 @@ function reloadTodoList() {
                 });
             };
             listItem.appendChild(delButton);
+            var completeButton = document.createElement("button");
+            completeButton.id = "complete" + numTodos;
+            completeButton.className = "deleteButton";
+            completeButton.textContent = "complete";
+            completeButton.onclick = function (event) {
+                completeTodo(todo, function() {
+                    reloadTodoList();
+                });
+            };
+            listItem.appendChild(completeButton);
             todoList.appendChild(listItem);
         });
     });
+}
+function completeTodo(todo, callback) {
+    var completeRequest = new XMLHttpRequest();
+    completeRequest.open("PUT", "/api/todo/" + todo.id);
+    completeRequest.setRequestHeader("Content-type", "application/json");
+    completeRequest.send(JSON.stringify({
+        title: todo.title,
+        isComplete: true
+    }));
+    completeRequest.onload = function() {
+        if (this.status === 200) {
+            callback();
+        } else {
+            error.textContent = "Failed to complete item. Server returned " + this.status + " - " + this.responseText;
+        }
+    };
 }
 
 function deleteTodo(id, callback) {

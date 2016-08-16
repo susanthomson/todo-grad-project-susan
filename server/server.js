@@ -17,6 +17,7 @@ module.exports = function(port, middleware, callback) {
     // Create
     app.post("/api/todo", function(req, res) {
         var todo = req.body;
+        todo.isComplete = false;
         todo.id = latestId.toString();
         latestId++;
         todos.push(todo);
@@ -27,6 +28,20 @@ module.exports = function(port, middleware, callback) {
     // Read
     app.get("/api/todo", function(req, res) {
         res.json(todos);
+    });
+
+    //Update
+    app.put("/api/todo/:id", function(req, res) {
+        var id = req.params.id;
+        var todo = getTodo(id);
+        if (todo) {
+            var newTodo = req.body;
+            newTodo.id = id;
+            todos[_.indexOf(todos, todo)] = newTodo;
+            res.sendStatus(200);
+        } else {
+            res.sendStatus(404);
+        }
     });
 
     // Delete
