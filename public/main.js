@@ -4,6 +4,7 @@ var form = document.getElementById("todo-form");
 var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var countLabel = document.getElementById("count-label");
+var clearCompleted = document.getElementById("clear-completed");
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -85,6 +86,12 @@ function reloadTodoList() {
             todoList.appendChild(listItem);
         });
         countLabel.textContent = undoneTodos;
+        if (numTodos - undoneTodos !== 0) {
+            clearCompleted.className = "someTodos";
+        }
+        else {
+            clearCompleted.className = "noTodos";
+        }
     });
 }
 function completeTodo(todo, callback) {
@@ -115,6 +122,23 @@ function deleteTodo(id, callback) {
             error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
         }
     };
+}
+
+function deleteCompleted() {
+    var completed = [];
+    getTodoList(function(todos) {
+        todos.forEach(function (todo) {
+            if (todo.isComplete) {
+                console.log(todo.id);
+                completed.push(todo.id);
+            }
+        });
+        console.log(completed);
+        completed.forEach(function (id) {
+            deleteTodo(id, function () {});
+        });
+        reloadTodoList();
+    });
 }
 
 reloadTodoList();
