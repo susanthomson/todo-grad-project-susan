@@ -10,9 +10,10 @@ header {
     padding: 0.5em 1em;
 }
 
-.deleteButton {
+button {
     background: #FF99CC;
-    margin-left: 1em;
+    border-radius: 10px;
+    box-shadow: 3px 3px 5px 3px #ccc;
 }
 
 .completeItem {
