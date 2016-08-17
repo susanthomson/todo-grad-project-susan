@@ -19,6 +19,13 @@ header {
     color: #FF3399;
     text-decoration: line-through;
 }
+.noTodos {
+    visibility: hidden;
+}
+
+.someTodos {
+    visibility: visible;
+}
 
 section,
 h1 {
