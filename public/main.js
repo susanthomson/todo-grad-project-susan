@@ -10,7 +10,6 @@ var displayTodos = "all";
 
 function filterTodos(event) {
     displayTodos = event.target.value;
-    console.log(displayTodos);
     reloadTodoList();
 }
 
