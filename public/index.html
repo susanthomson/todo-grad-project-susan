@@ -13,9 +13,9 @@
         <div id="count-label"></div>
         <div>
             Display
-            <input type="radio" value="all" name="filter-todos" checked="checked">All
-            <input type="radio" value="active" name="filter-todos">Active
-            <input type="radio" value="completed" name="filter-todos">Completed
+            <input type="radio" value="all" name="filter-todos" checked="checked" onclick="filterTodos(event)">All
+            <input type="radio" value="active" name="filter-todos" onclick="filterTodos(event)">Active
+            <input type="radio" value="completed" name="filter-todos" onclick="filterTodos(event)">Completed
             <button id="clear-completed" class="noTodos" onclick="deleteCompleted()">Delete completed</button>
         </div>
         <section>
