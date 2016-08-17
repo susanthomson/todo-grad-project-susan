@@ -56,12 +56,19 @@ function reloadTodoList() {
         todoList.removeChild(todoList.firstChild);
     }
     todoListPlaceholder.style.display = "block";
-    getTodoList(function(todos) {
-        todoListPlaceholder.style.display = "none";
-        var numTodos = 0;
-        var undoneTodos = 0;
-        todos.forEach(function(todo) {
-            numTodos++;
+    getTodoList(createTodoList);
+}
+
+function createTodoList (todos) {
+    todoListPlaceholder.style.display = "none";
+    var numTodos = 0;
+    var undoneTodos = 0;
+    todos.forEach(function(todo) {
+        numTodos++;
+        var displayItem = (displayTodos === "all") ||
+            (displayTodos === "completed" && todo.isComplete) ||
+            (displayTodos === "active" && !todo.isComplete);
+        if (displayItem) {
             var listItem = document.createElement("li");
             if (todo.isComplete) {
                 listItem.className = "completeItem";
@@ -72,40 +79,33 @@ function reloadTodoList() {
             listItem.textContent = todo.title;
             var delButton = document.createElement("button");
             delButton.id = "del" + numTodos;
-            delButton.className = "deleteButton";
             delButton.textContent = "delete";
             delButton.onclick = function (event) {
-                deleteTodo(todo.id, function() {
+                deleteTodo(todo.id, function () {
                     reloadTodoList();
                 });
             };
             listItem.appendChild(delButton);
             var completeButton = document.createElement("button");
             completeButton.id = "complete" + numTodos;
-            completeButton.className = "deleteButton";
             completeButton.textContent = "complete";
             completeButton.onclick = function (event) {
-                completeTodo(todo, function() {
+                completeTodo(todo, function () {
                     reloadTodoList();
                 });
             };
             listItem.appendChild(completeButton);
-            if (displayTodos === "all") {
-                todoList.appendChild(listItem);
-            } else if (displayTodos === "completed" && todo.isComplete) {
-                todoList.appendChild(listItem);
-            } else if (displayTodos === "active" && !todo.isComplete) {
-                todoList.appendChild(listItem);
-            }
-        });
-        countLabel.textContent = undoneTodos;
-        if (numTodos - undoneTodos !== 0) {
-            clearCompleted.className = "someTodos";
-        } else {
-            clearCompleted.className = "noTodos";
+            todoList.appendChild(listItem);
         }
     });
+    countLabel.textContent = undoneTodos;
+    if (numTodos - undoneTodos !== 0) {
+        clearCompleted.className = "someTodos";
+    } else {
+        clearCompleted.className = "noTodos";
+    }
 }
+
 function completeTodo(todo, callback) {
     var completeRequest = new XMLHttpRequest();
     completeRequest.open("PUT", "/api/todo/" + todo.id);
