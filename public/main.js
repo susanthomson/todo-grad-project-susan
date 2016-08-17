@@ -5,6 +5,13 @@ var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var countLabel = document.getElementById("count-label");
 var clearCompleted = document.getElementById("clear-completed");
+var filterRadios = document.getElementsByName("filter-todos");
+var displayTodos = "all";
+
+function filterTodos(event) {
+    displayTodos = event.target.value;
+    reloadTodoList();
+}
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -49,12 +56,19 @@ function reloadTodoList() {
         todoList.removeChild(todoList.firstChild);
     }
     todoListPlaceholder.style.display = "block";
-    getTodoList(function(todos) {
-        todoListPlaceholder.style.display = "none";
-        var numTodos = 0;
-        var undoneTodos = 0;
-        todos.forEach(function(todo) {
-            numTodos++;
+    getTodoList(createTodoList);
+}
+
+function createTodoList (todos) {
+    todoListPlaceholder.style.display = "none";
+    var numTodos = 0;
+    var undoneTodos = 0;
+    todos.forEach(function(todo) {
+        numTodos++;
+        var displayItem = (displayTodos === "all") ||
+            (displayTodos === "completed" && todo.isComplete) ||
+            (displayTodos === "active" && !todo.isComplete);
+        if (displayItem) {
             var listItem = document.createElement("li");
             if (todo.isComplete) {
                 listItem.className = "completeItem";
@@ -63,36 +77,31 @@ function reloadTodoList() {
                 undoneTodos++;
             }
             listItem.textContent = todo.title;
-            var delButton = document.createElement("button");
-            delButton.id = "del" + numTodos;
-            delButton.className = "deleteButton";
-            delButton.textContent = "delete";
-            delButton.onclick = function (event) {
-                deleteTodo(todo.id, function() {
-                    reloadTodoList();
-                });
-            };
-            listItem.appendChild(delButton);
-            var completeButton = document.createElement("button");
-            completeButton.id = "complete" + numTodos;
-            completeButton.className = "deleteButton";
-            completeButton.textContent = "complete";
-            completeButton.onclick = function (event) {
-                completeTodo(todo, function() {
-                    reloadTodoList();
-                });
-            };
-            listItem.appendChild(completeButton);
+            listItem.appendChild(createTaskButton(todo, numTodos, "delete", deleteTodo));
+            listItem.appendChild(createTaskButton(todo, numTodos, "complete", completeTodo));
             todoList.appendChild(listItem);
-        });
-        countLabel.textContent = undoneTodos;
-        if (numTodos - undoneTodos !== 0) {
-            clearCompleted.className = "someTodos";
-        } else {
-            clearCompleted.className = "noTodos";
         }
     });
+    countLabel.textContent = undoneTodos;
+    if (numTodos - undoneTodos !== 0) {
+        clearCompleted.className = "someTodos";
+    } else {
+        clearCompleted.className = "noTodos";
+    }
 }
+
+function createTaskButton (todo, numTodos, task, clickFunction) {
+    var taskButton = document.createElement("button");
+    taskButton.id = task + numTodos;
+    taskButton.textContent = task;
+    taskButton.onclick = function (event) {
+        clickFunction(todo, function () {
+            reloadTodoList();
+        });
+    };
+    return taskButton;
+}
+
 function completeTodo(todo, callback) {
     var completeRequest = new XMLHttpRequest();
     completeRequest.open("PUT", "/api/todo/" + todo.id);
@@ -110,9 +119,9 @@ function completeTodo(todo, callback) {
     };
 }
 
-function deleteTodo(id, callback) {
+function deleteTodo(todo, callback) {
     var deleteRequest = new XMLHttpRequest();
-    deleteRequest.open("DELETE", "/api/todo/" + id);
+    deleteRequest.open("DELETE", "/api/todo/" + todo.id);
     deleteRequest.send();
     deleteRequest.onload = function() {
         if (this.status === 200) {
@@ -130,11 +139,11 @@ function deleteCompleted() {
     getTodoList(function(todos) {
         todos.forEach(function (todo) {
             if (todo.isComplete) {
-                completed.push(todo.id);
+                completed.push(todo);
             }
         });
-        completed.forEach(function (id) {
-            deleteTodo(id);
+        completed.forEach(function (todo) {
+            deleteTodo(todo);
         });
         reloadTodoList();
     });

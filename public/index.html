@@ -11,6 +11,13 @@
             <h1>TODO List</h1>
         </header>
         <div id="count-label"></div>
+        <div>
+            Display
+            <input type="radio" value="all" name="filter-todos" checked="checked" onclick="filterTodos(event)">All
+            <input type="radio" value="active" name="filter-todos" onclick="filterTodos(event)">Active
+            <input type="radio" value="completed" name="filter-todos" onclick="filterTodos(event)">Completed
+            <button id="clear-completed" class="noTodos" onclick="deleteCompleted()">Delete completed</button>
+        </div>
         <section>
             <h2 id="todo-list-placeholder">Loading...</h2>
             <ul id="todo-list"></ul>
@@ -18,7 +25,6 @@
                 <input id="new-todo" placeholder="What needs to be done?" autofocus>
                 <button id="submit-todo" type="submit" value="Create">Create</button>
             </form>
-            <button id="clear-completed" class="noTodos" onclick="deleteCompleted()">Delete completed</button>
             <div id="error"></div>
         </section>
         <script type="text/javascript" src="main.js"></script>
