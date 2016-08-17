@@ -77,24 +77,8 @@ function createTodoList (todos) {
                 undoneTodos++;
             }
             listItem.textContent = todo.title;
-            var delButton = document.createElement("button");
-            delButton.id = "del" + numTodos;
-            delButton.textContent = "delete";
-            delButton.onclick = function (event) {
-                deleteTodo(todo.id, function () {
-                    reloadTodoList();
-                });
-            };
-            listItem.appendChild(delButton);
-            var completeButton = document.createElement("button");
-            completeButton.id = "complete" + numTodos;
-            completeButton.textContent = "complete";
-            completeButton.onclick = function (event) {
-                completeTodo(todo, function () {
-                    reloadTodoList();
-                });
-            };
-            listItem.appendChild(completeButton);
+            listItem.appendChild(createTaskButton(todo, numTodos, "delete", deleteTodo));
+            listItem.appendChild(createTaskButton(todo, numTodos, "complete", completeTodo));
             todoList.appendChild(listItem);
         }
     });
@@ -104,6 +88,18 @@ function createTodoList (todos) {
     } else {
         clearCompleted.className = "noTodos";
     }
+}
+
+function createTaskButton (todo, numTodos, task, clickFunction) {
+    var taskButton = document.createElement("button");
+    taskButton.id = task + numTodos;
+    taskButton.textContent = task;
+    taskButton.onclick = function (event) {
+        clickFunction(todo, function () {
+            reloadTodoList();
+        });
+    };
+    return taskButton;
 }
 
 function completeTodo(todo, callback) {
@@ -123,9 +119,9 @@ function completeTodo(todo, callback) {
     };
 }
 
-function deleteTodo(id, callback) {
+function deleteTodo(todo, callback) {
     var deleteRequest = new XMLHttpRequest();
-    deleteRequest.open("DELETE", "/api/todo/" + id);
+    deleteRequest.open("DELETE", "/api/todo/" + todo.id);
     deleteRequest.send();
     deleteRequest.onload = function() {
         if (this.status === 200) {
@@ -143,11 +139,11 @@ function deleteCompleted() {
     getTodoList(function(todos) {
         todos.forEach(function (todo) {
             if (todo.isComplete) {
-                completed.push(todo.id);
+                completed.push(todo);
             }
         });
-        completed.forEach(function (id) {
-            deleteTodo(id);
+        completed.forEach(function (todo) {
+            deleteTodo(todo);
         });
         reloadTodoList();
     });
