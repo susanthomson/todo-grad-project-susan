@@ -5,6 +5,13 @@ var todoTitle = document.getElementById("new-todo");
 var error = document.getElementById("error");
 var countLabel = document.getElementById("count-label");
 var clearCompleted = document.getElementById("clear-completed");
+var filterRadios = document.getElementsByName("filter-todos");
+var displayTodos = "all";
+
+function filterTodos(event) {
+    displayTodos = event.target.value;
+    reloadTodoList();
+}
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
@@ -83,7 +90,13 @@ function reloadTodoList() {
                 });
             };
             listItem.appendChild(completeButton);
-            todoList.appendChild(listItem);
+            if (displayTodos === "all") {
+                todoList.appendChild(listItem);
+            } else if (displayTodos === "completed" && todo.isComplete) {
+                todoList.appendChild(listItem);
+            } else if (displayTodos === "active" && !todo.isComplete) {
+                todoList.appendChild(listItem);
+            }
         });
         countLabel.textContent = undoneTodos;
         if (numTodos - undoneTodos !== 0) {
