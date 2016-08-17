@@ -88,8 +88,7 @@ function reloadTodoList() {
         countLabel.textContent = undoneTodos;
         if (numTodos - undoneTodos !== 0) {
             clearCompleted.className = "someTodos";
-        }
-        else {
+        } else {
             clearCompleted.className = "noTodos";
         }
     });
@@ -117,7 +116,9 @@ function deleteTodo(id, callback) {
     deleteRequest.send();
     deleteRequest.onload = function() {
         if (this.status === 200) {
-            callback();
+            if (callback) {
+                callback();
+            }
         } else {
             error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
         }
@@ -129,13 +130,11 @@ function deleteCompleted() {
     getTodoList(function(todos) {
         todos.forEach(function (todo) {
             if (todo.isComplete) {
-                console.log(todo.id);
                 completed.push(todo.id);
             }
         });
-        console.log(completed);
         completed.forEach(function (id) {
-            deleteTodo(id, function () {});
+            deleteTodo(id);
         });
         reloadTodoList();
     });
