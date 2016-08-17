@@ -8,12 +8,14 @@ var clearCompleted = document.getElementById("clear-completed");
 var filterRadios = document.getElementsByName("filter-todos");
 var displayTodos = "all";
 
+/*
 filterRadios.forEach(function (radio) {
     radio.onclick = function () {
         displayTodos = this.value;
         reloadTodoList();
     };
 });
+*/
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
