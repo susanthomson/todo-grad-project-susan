@@ -139,3 +139,4 @@ function deleteCompleted() {
 }
 
 reloadTodoList();
+setInterval(reloadTodoList, 5000);
