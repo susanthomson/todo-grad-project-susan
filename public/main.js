@@ -25,35 +25,31 @@ function filterTodos(event) {
 
 form.onsubmit = function(event) {
     var title = todoTitle.value;
-    createTodo(title, function() {
-        reloadTodoList();
-    });
+    createTodo(title).then(reloadTodoList);
     todoTitle.value = "";
     event.preventDefault();
 };
 
-function createTodo(title, callback) {
-    fetch("/api/todo/", {
+function createTodo(title) {
+    return fetch("/api/todo/", {
         method: "POST",
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({title: title})
     })
         .then(checkStatus)
-        .then(callback)
-        .catch(function (err) {
+        .catch(function(err) {
             error.textContent = "Failed to create item. Server returned " + err.response.status + " - " + err.message;
         });
 }
 
-function getTodoList (callback) {
-    fetch("/api/todo")
+function getTodoList() {
+    return fetch("/api/todo")
         .then(checkStatus)
         .then(function(response) {
             return response.text();
         })
         .then(JSON.parse)
-        .then(callback)
-        .catch(function (err) {
+        .catch(function(err) {
             error.textContent = "Failed to get list. Server returned " + err.response.status + " - " + err.message;
         });
 }
@@ -63,10 +59,10 @@ function reloadTodoList() {
         todoList.removeChild(todoList.firstChild);
     }
     todoListPlaceholder.style.display = "block";
-    getTodoList(createTodoList);
+    getTodoList().then(createTodoList);
 }
 
-function createTodoList (todos) {
+function createTodoList(todos) {
     todoListPlaceholder.style.display = "none";
     var numTodos = 0;
     var undoneTodos = 0;
@@ -97,52 +93,45 @@ function createTodoList (todos) {
     }
 }
 
-function createTaskButton (todo, numTodos, task, clickFunction) {
+function createTaskButton(todo, numTodos, task, clickFunction) {
     var taskButton = document.createElement("button");
     taskButton.id = task + numTodos;
     taskButton.textContent = task;
-    taskButton.onclick = function (event) {
-        clickFunction(todo, function () {
-            reloadTodoList();
-        });
+    taskButton.onclick = function(event) {
+        clickFunction(todo).then(reloadTodoList);
     };
     return taskButton;
 }
 
-function completeTodo(todo, callback) {
-    fetch("/api/todo/" + todo.id, {
+function completeTodo(todo) {
+    return fetch("/api/todo/" + todo.id, {
             method: "PUT",
             headers: {"Content-type": "application/json"},
             body: JSON.stringify({title: todo.title, isComplete: true})
         })
         .then(checkStatus)
-        .then(callback)
-        .catch(function (err) {
+        .catch(function(err) {
             error.textContent = "Failed to complete item. Server returned " + err.response.status + " - " + err.message;
         });
 }
 
-function deleteTodo(todo, callback) {
-    fetch("/api/todo/" + todo.id, {method: "DELETE"})
+function deleteTodo(todo) {
+    return fetch("/api/todo/" + todo.id, {method: "DELETE"})
         .then(checkStatus)
-        .then(function() {
-            if (callback) {
-                callback();
-            }
-        }).catch(function (err) {
+        .catch(function(err) {
             error.textContent = "Failed to delete item. Server returned " + err.response.status + " - " + err.message;
         });
 }
 
 function deleteCompleted() {
     var completed = [];
-    getTodoList(function(todos) {
-        todos.forEach(function (todo) {
+    getTodoList().then(function(todos) {
+        todos.forEach(function(todo) {
             if (todo.isComplete) {
                 completed.push(todo);
             }
         });
-        completed.forEach(function (todo) {
+        completed.forEach(function(todo) {
             deleteTodo(todo);
         });
         reloadTodoList();
