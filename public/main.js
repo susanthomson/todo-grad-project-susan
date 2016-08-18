@@ -8,6 +8,16 @@ var clearCompleted = document.getElementById("clear-completed");
 var filterRadios = document.getElementsByName("filter-todos");
 var displayTodos = "all";
 
+function checkStatus(response) {
+    if (response.status >= 200 && response.status < 300) {
+        return response;
+    } else {
+        var error = new Error(response.statusText);
+        error.response = response;
+        throw error;
+    }
+}
+
 function filterTodos(event) {
     displayTodos = event.target.value;
     reloadTodoList();
@@ -23,32 +33,29 @@ form.onsubmit = function(event) {
 };
 
 function createTodo(title, callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("POST", "/api/todo");
-    createRequest.setRequestHeader("Content-type", "application/json");
-    createRequest.send(JSON.stringify({
-        title: title
-    }));
-    createRequest.onload = function() {
-        if (this.status === 201) {
-            callback();
-        } else {
-            error.textContent = "Failed to create item. Server returned " + this.status + " - " + this.responseText;
-        }
-    };
+    fetch("/api/todo/", {
+        method: "POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({title: title})
+    })
+        .then(checkStatus)
+        .then(callback)
+        .catch(function (err) {
+            error.textContent = "Failed to create item. Server returned " + err.response.status + " - " + err.message;
+        });
 }
 
-function getTodoList(callback) {
-    var createRequest = new XMLHttpRequest();
-    createRequest.open("GET", "/api/todo");
-    createRequest.onload = function() {
-        if (this.status === 200) {
-            callback(JSON.parse(this.responseText));
-        } else {
-            error.textContent = "Failed to get list. Server returned " + this.status + " - " + this.responseText;
-        }
-    };
-    createRequest.send();
+function getTodoList (callback) {
+    fetch("/api/todo")
+        .then(checkStatus)
+        .then(function(response) {
+            return response.text();
+        })
+        .then(JSON.parse)
+        .then(callback)
+        .catch(function (err) {
+            error.textContent = "Failed to get list. Server returned " + err.response.status + " - " + err.message;
+        });
 }
 
 function reloadTodoList() {
@@ -103,35 +110,28 @@ function createTaskButton (todo, numTodos, task, clickFunction) {
 }
 
 function completeTodo(todo, callback) {
-    var completeRequest = new XMLHttpRequest();
-    completeRequest.open("PUT", "/api/todo/" + todo.id);
-    completeRequest.setRequestHeader("Content-type", "application/json");
-    completeRequest.send(JSON.stringify({
-        title: todo.title,
-        isComplete: true
-    }));
-    completeRequest.onload = function() {
-        if (this.status === 200) {
-            callback();
-        } else {
-            error.textContent = "Failed to complete item. Server returned " + this.status + " - " + this.responseText;
-        }
-    };
+    fetch("/api/todo/" + todo.id, {
+            method: "PUT",
+            headers: {"Content-type": "application/json"},
+            body: JSON.stringify({title: todo.title, isComplete: true})
+        })
+        .then(checkStatus)
+        .then(callback)
+        .catch(function (err) {
+            error.textContent = "Failed to complete item. Server returned " + err.response.status + " - " + err.message;
+        });
 }
 
 function deleteTodo(todo, callback) {
-    var deleteRequest = new XMLHttpRequest();
-    deleteRequest.open("DELETE", "/api/todo/" + todo.id);
-    deleteRequest.send();
-    deleteRequest.onload = function() {
-        if (this.status === 200) {
+    fetch("/api/todo/" + todo.id, {method: "DELETE"})
+        .then(checkStatus)
+        .then(function() {
             if (callback) {
                 callback();
             }
-        } else {
-            error.textContent = "Failed to delete item. Server returned " + this.status + " - " + this.responseText;
-        }
-    };
+        }).catch(function (err) {
+            error.textContent = "Failed to delete item. Server returned " + err.response.status + " - " + err.message;
+        });
 }
 
 function deleteCompleted() {
