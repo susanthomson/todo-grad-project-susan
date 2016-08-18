@@ -66,24 +66,24 @@ function createTodoList(todos) {
     todoListPlaceholder.style.display = "none";
     var numTodos = 0;
     var undoneTodos = 0;
-    todos.forEach(function(todo) {
-        numTodos++;
-        var displayItem = (displayTodos === "all") ||
+    var visibleTodos = todos.filter(function(todo) {
+        return (displayTodos === "all") ||
             (displayTodos === "completed" && todo.isComplete) ||
             (displayTodos === "active" && !todo.isComplete);
-        if (displayItem) {
-            var listItem = document.createElement("li");
-            if (todo.isComplete) {
-                listItem.className = "completeItem";
-            }
-            else {
-                undoneTodos++;
-            }
-            listItem.textContent = todo.title;
-            listItem.appendChild(createTaskButton(todo, numTodos, "delete", deleteTodo));
-            listItem.appendChild(createTaskButton(todo, numTodos, "complete", completeTodo));
-            todoList.appendChild(listItem);
+    });
+    visibleTodos.forEach(function(todo) {
+        numTodos++;
+        var listItem = document.createElement("li");
+        if (todo.isComplete) {
+            listItem.className = "completeItem";
         }
+        else {
+            undoneTodos++;
+        }
+        listItem.textContent = todo.title;
+        listItem.appendChild(createTaskButton(todo, numTodos, "delete", deleteTodo));
+        listItem.appendChild(createTaskButton(todo, numTodos, "complete", completeTodo));
+        todoList.appendChild(listItem);
     });
     countLabel.textContent = undoneTodos;
     if (numTodos - undoneTodos !== 0) {
