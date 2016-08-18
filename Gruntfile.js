@@ -78,8 +78,8 @@ module.exports = function(grunt) {
             }
         },
         watch: {
-                files: ["server/*"],
-                tasks: ["express:dev:stop", "express:dev"],
+            files: ["server/*"],
+            tasks: ["express:dev:stop", "express:dev"],
         }
     });
 
