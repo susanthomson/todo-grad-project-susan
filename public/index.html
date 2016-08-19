@@ -5,29 +5,24 @@
         <title>TODO List</title>
         <link href="main.css" rel="stylesheet" type="text/css">
         <link rel="icon" type="image/ico" href="favicon.ico">
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
     </head>
-    <body>
+    <body ng-app="TodoListApp">
         <header>
             <h1>TODO List</h1>
         </header>
-        <div id="count-label"></div>
-        <div>
-            Display
-            <input type="radio" value="all" name="filter-todos" checked="checked" onclick="filterTodos(event)">All
-            <input type="radio" value="active" name="filter-todos" onclick="filterTodos(event)">Active
-            <input type="radio" value="completed" name="filter-todos" onclick="filterTodos(event)">Completed
-            <button id="clear-completed" class="noTodos" onclick="deleteCompleted()">Delete completed</button>
-        </div>
-        <section>
-            <h2 id="todo-list-placeholder">Loading...</h2>
-            <ul id="todo-list"></ul>
+        <section ng-controller="MainController">
+            <div ng-repeat="todo in todos">
+                {{ todo.title }} {{ todo.isComplete }} <button ng-click="deleteTodo(todo)">Delete</button><button ng-click="completeTodo(todo)">Complete</button>
+            </div>
             <form id="todo-form">
-                <input id="new-todo" placeholder="What needs to be done?" autofocus>
-                <button id="submit-todo" type="submit" value="Create">Create</button>
+                <input id="new-todo" autofocus ng-model="title">
+                <button id="submit-todo" type="submit" ng-click="createTodo()">Create</button>
             </form>
-            <div id="error"></div>
+            <div id="error">{{ errorMessage }}</div>
         </section>
-        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript" src="app.js"></script>
+        <script type="text/javascript" src="MainController.js"></script>
+        <script type="text/javascript" src="TodoService.js"></script>
     </body>
 </html>
