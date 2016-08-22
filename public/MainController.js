@@ -1,10 +1,10 @@
 app.controller("MainController", ["$scope", "TodoService",
 function($scope, TodoService) {
-    $scope.hello = "hello susan";
-    $scope.todos;
+    $scope.todos = [];
+    $scope.incomplete = 0;
     var defaultTitle = "";
     $scope.title = defaultTitle;
-    $scope.errorMessage ="";
+    $scope.errorMessage = "";
     getTodos();
     
     function getTodos() {
@@ -14,6 +14,7 @@ function($scope, TodoService) {
             })
             .then(function(todos) {
                 $scope.todos = todos;
+                $scope.incomplete = countIncomplete();
             })
             .catch(function(err) {
                 handleError(err, "get list");
@@ -21,33 +22,35 @@ function($scope, TodoService) {
     }
 
     $scope.createTodo = function() {
-        TodoService.createTodo($scope.title)
-            .then(getTodos)
-            .catch(function(err) {
-                handleError(err, "create item");
-        });
+        var todo = {title: $scope.title};
+        todoAction(todo, TodoService.createTodo, "create item");
         $scope.title = defaultTitle;
-    }
-
+    };
+ 
     $scope.completeTodo = function(todo) {
-        TodoService.completeTodo(todo)
-            .then(getTodos)
-            .catch(function(err) {
-                handleError(err, "complete item");
-        });
+        todoAction(todo, TodoService.completeTodo, "complete item");
+    };
+
+    $scope.deleteTodo = function(todo) {
+        todoAction(todo, TodoService.deleteTodo, "delete item");
+    };
+
+    function handleError(err, task) {
+        $scope.errorMessage = "Failed to " + task + ". Server returned " + err.status + " - " + err.message;
     }
 
-    $scope.deleteTodo = function (todo) {
-        TodoService.deleteTodo(todo)
+    function todoAction(todo, action, description) {
+        action(todo)
         .then(getTodos)
         .catch(function(err) {
-            handleError(err, "delete item");
+            handleError(err, description);
         });
     }
 
-function handleError(err, task) {
-    $scope.errorMessage = "Failed to " + task + ". Server returned " + err.status + " - " + err.message
-    console.log($scope.errorMessage);
-}
+    function countIncomplete() {
+        return $scope.todos.filter(function(todo) {
+            return !todo.isComplete;
+        }).length;
+    }
 
 }]);

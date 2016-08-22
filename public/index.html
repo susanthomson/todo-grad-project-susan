@@ -12,8 +12,11 @@
             <h1>TODO List</h1>
         </header>
         <section ng-controller="MainController">
+            Remaining tasks: {{ incomplete }}
             <div ng-repeat="todo in todos">
-                {{ todo.title }} {{ todo.isComplete }} <button ng-click="deleteTodo(todo)">Delete</button><button ng-click="completeTodo(todo)">Complete</button>
+                <span ng-class="{completeItem: todo.isComplete}">{{ todo.title }}</span>
+                <button ng-click="deleteTodo(todo)">Delete</button>
+                <button ng-click="completeTodo(todo)">Complete</button>
             </div>
             <form id="todo-form">
                 <input id="new-todo" autofocus ng-model="title">
