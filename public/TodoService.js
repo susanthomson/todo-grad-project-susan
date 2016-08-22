@@ -11,7 +11,7 @@ app.service("TodoService", ["$http", function($http) {
   };
 
   this.completeTodo = function(todo) {
-    return $http.put("/api/todo/" + todo.id, JSON.stringify({title: todo.title, isComplete: true}), {
+    return $http.put("/api/todo/" + todo.id, JSON.stringify({title: todo.title, isComplete: todo.isComplete}), {
         headers: {"Content-type": "application/json"}
         });
   };

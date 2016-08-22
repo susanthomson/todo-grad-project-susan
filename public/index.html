@@ -20,13 +20,13 @@
                 <input type="radio" value="completed" ng-model="displayTodos">Completed
                 <button ng-hide="complete === 0" ng-click="deleteCompleted()">Delete completed</button>
             </div>
-            <div ng-repeat="todo in todos">
-                <span ng-hide="hideTodo(todo)">
-                    <span ng-class="{completeItem: todo.isComplete}">{{ todo.title }}</span>
-                    <button ng-click="deleteTodo(todo)">Delete</button>
-                    <button ng-click="completeTodo(todo)">Complete</button>
-                </span>
-            </div>
+            <table>
+            <tr ng-hide="hideTodo(todo)" ng-repeat="todo in todos">
+                    <td><input type="checkbox" ng-model="todo.isComplete" ng-change="completeTodo(todo)"></td>
+                    <td ng-class="{completeItem: todo.isComplete}">{{ todo.title }}</td>
+                    <td><button ng-click="deleteTodo(todo)">Delete</button></td>
+            </tr>
+            </table>
             <form id="todo-form">
                 <input id="new-todo" autofocus ng-model="title">
                 <button id="submit-todo" type="submit" ng-click="createTodo()">Create</button>
